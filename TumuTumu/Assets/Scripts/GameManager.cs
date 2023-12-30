@@ -23,7 +23,7 @@ public class GameManager : MonoBehaviour
 
     List<GameObject> bubbles;
 
-    private int gameScore;
+    private int gameScore; //ゲームスコアの保存変数
 
 
     private void Start( )
@@ -36,7 +36,30 @@ public class GameManager : MonoBehaviour
 
     private void Update( )
     {
-        
+        PlayerInput();
+    }
+
+
+    /// <summary>
+    /// Playerの入力(タッチ)処理
+    /// </summary>
+    private void PlayerInput()
+    {
+        if(Input.GetMouseButtonUp(0))
+        {
+            //screen座標からワールド座標に変換
+            Vector2 worldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            RaycastHit2D hit2D = Physics2D.Raycast(worldPoint , Vector2.zero);
+
+            //削除されたアイテムを消す
+            bubbles.RemoveAll(item => item == null);
+
+            if(hit2D)
+            {
+                GameObject obj = hit2D.collider.gameObject;
+                DeleteItems(obj);
+            }
+        }
     }
 
 
@@ -64,6 +87,43 @@ public class GameManager : MonoBehaviour
             //内部データの追加
             bubbles.Add(bubble);
         }
+    }
+
+    /// <summary>
+    /// 引数と同じ色のアイテムを削除する
+    /// </summary>
+    /// <param name="target"></param>
+    private void DeleteItems(GameObject target)
+    {
+        List<GameObject> checkItems = new List<GameObject>(); 
+
+        checkItems.Add(target);
+
+        //TODO : 全体のアイテムから同じ色を走査する
+
+
+        if (checkItems.Count < deleteCount) return;
+        
+        List<GameObject> destroyItems = new List<GameObject>();
+        
+        foreach(GameObject item in checkItems)
+        {
+            //かぶりなしの削除したアイテムをカウント
+            if (!destroyItems.Contains(item))
+            {
+                destroyItems.Add(item);
+            }
+
+            Destroy(item);
+        }
+
+        //削除した分の加算処理
+        SpawnItem(destroyItems.Count);
+        gameScore += destroyItems.Count * 100;
+
+        //スコア表示
+        textGameScore.text = "" + gameScore;
+
     }
 
 }

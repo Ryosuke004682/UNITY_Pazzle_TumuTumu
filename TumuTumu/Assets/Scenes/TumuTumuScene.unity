@@ -560,6 +560,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 570669565}
+  - component: {fileID: 570669566}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -582,6 +583,32 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &570669566
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 570669564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b75f35282d740bd4f8b43bb182ee3ee3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefabBubbles:
+  - {fileID: 8550084738476189264, guid: 43bfe36409e20934e86a60b423eed47e, type: 3}
+  - {fileID: 628915338479419379, guid: 832723e6466b30c4fa580ec06a7abf48, type: 3}
+  - {fileID: 1555179821236435872, guid: f4c613de467a5054fa6bca04252249bf, type: 3}
+  - {fileID: 5525153179734153309, guid: 7597858227f48f649aa11d1a5be7dfac, type: 3}
+  - {fileID: 350794595783240911, guid: d3968b199f79c5243943831b805dec29, type: 3}
+  gameTimer: 0
+  fieldItemCountMax: 60
+  deleteCount: 0
+  textGameScore: {fileID: 1849190857}
+  textGameTimer: {fileID: 246527061}
+  panelGameResult: {fileID: 2084803729}
+  seBubble: {fileID: 0}
+  seSpecial: {fileID: 0}
 --- !u!1 &776567018
 GameObject:
   m_ObjectHideFlags: 0
