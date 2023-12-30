@@ -27,11 +27,18 @@ public class GameManager : MonoBehaviour
     private int gameScore; //ゲームスコアの保存変数
 
 
+    List<GameObject> linerBubbles;
+    LineRenderer lineRenderer;
+
+
     private void Start( )
     {
         audioSource = GetComponent<AudioSource>();
         bubbles = new List<GameObject>();
         panelGameResult.SetActive(false);
+
+        linerBubbles = new List<GameObject>();
+        lineRenderer = GetComponent<LineRenderer>();
 
         SpawnItem(fieldItemCountMax);
     }
@@ -59,21 +66,82 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void PlayerInput()
     {
+        if(Input.GetMouseButtonDown(0))
+        {
+            GameObject hitBubbles = GetHitBubble();
+
+            //下準備
+            linerBubbles.Clear();
+
+            if(hitBubbles)
+            {
+                linerBubbles.Add(hitBubbles);
+            }
+        }
+        else if(Input.GetMouseButton(0))
+        {
+            GameObject hitBubbles = GetHitBubble();
+            
+            //当たり判定あり
+            if(hitBubbles && linerBubbles.Count > 0)
+            {
+                GameObject pre = linerBubbles[linerBubbles.Count - 1];
+                float distance = Vector2.Distance(hitBubbles.transform.position , pre.transform.position);
+
+                //ラインカラー
+                bool isSamColor = 
+                    hitBubbles.GetComponent<SpriteRenderer>().sprite 
+                    == pre.GetComponent<SpriteRenderer>().sprite;
+
+
+                if(isSamColor && distance <= 1.55f && !linerBubbles.Contains(hitBubbles))
+                {
+                    //ラインの追加
+                    linerBubbles.Add(hitBubbles);
+                }
+            }
+        }
+        else if(Input.GetMouseButtonUp(0))
+        {
+            bubbles.RemoveAll(item => item == null);
+
+            DeleteItems(linerBubbles);
+
+            lineRenderer.positionCount = 0;
+            linerBubbles.Clear();
+        }
+
+
+        //ラインの描画
+        if(linerBubbles.Count > 1)
+        {
+            //頂点数
+            lineRenderer.positionCount = linerBubbles.Count;
+
+            //ラインの位置座標を取得
+            for(int i = 0; i < linerBubbles.Count; i++)
+            {
+                lineRenderer.SetPosition(i , linerBubbles[i].transform.position);
+            }
+        }
+
+
+
+        /*マウスの挙動テスト
         if(Input.GetMouseButtonUp(0))
         {
             //screen座標からワールド座標に変換
-            Vector2 worldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            RaycastHit2D hit2D = Physics2D.Raycast(worldPoint , Vector2.zero);
+            GameObject hitBubbles = GetHitBubble();
 
             //削除されたアイテムを消す
             bubbles.RemoveAll(item => item == null);
 
-            if(hit2D)
+            if(hitBubbles)
             {
-                GameObject obj = hit2D.collider.gameObject;
-                CheckItems(obj);
+                CheckItems(hitBubbles);
             }
         }
+        */
     }
 
 
@@ -211,10 +279,31 @@ public class GameManager : MonoBehaviour
         DeleteItems(checkItems);
     }
 
+    //マウスポジションに当たり判定があったバブルを返す
+    GameObject GetHitBubble()
+    {
+        GameObject ret = null;
+
+        Vector2 worldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        RaycastHit2D hit2D = Physics2D.Raycast(worldPoint, Vector2.zero);
+
+        if(hit2D)
+        {
+            SpriteRenderer spriteRenderer = hit2D.collider.gameObject.GetComponent<SpriteRenderer>();
+            if(spriteRenderer)
+            {
+                ret = hit2D.collider.gameObject;
+            }
+        }
+
+        return ret;
+    }
+
+
+
     public void OnClickRetry()
     {
         SceneManager.LoadScene("TumuTumuScene");
 
     }
-
 }
